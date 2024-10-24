@@ -88,6 +88,9 @@ public class login extends javax.swing.JFrame {
             ResultSet rs= st.executeQuery(query);
             if (rs.next()) {
                 JOptionPane.showMessageDialog(this, "El usuario existe en la BD");
+                Principal menu = new Principal();
+                menu.setVisible(true);
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "El usuario No existe en la BD");
             }
