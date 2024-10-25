@@ -58,7 +58,7 @@ public class Principal extends javax.swing.JFrame {
 
         barraHerramientas.setRollover(true);
 
-        jButton1.setText("Cerrar Ventana 1");
+        jButton1.setText("Cerrar Gestión de Cleintes");
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -83,16 +83,16 @@ public class Principal extends javax.swing.JFrame {
         getContentPane().add(barraHerramientas);
         barraHerramientas.setBounds(0, 10, 570, 50);
         getContentPane().add(fondo);
-        fondo.setBounds(0, 60, 580, 320);
+        fondo.setBounds(0, 60, 790, 420);
 
-        jMenu1.setText("Ventana 1");
+        jMenu1.setText("Clientes");
         jMenu1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenu1ActionPerformed(evt);
             }
         });
 
-        jMenuItem1.setText("Abrir Ventana 1");
+        jMenuItem1.setText("Abrir Gestión de Clientes");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
