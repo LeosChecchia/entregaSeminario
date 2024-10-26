@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
-import com.mysql.cj.xdevapi.PreparableStatement;
-import com.mysql.jdbc.PreparedStatement;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -23,8 +19,10 @@ public class daoCliente {
 
     public boolean create(Cliente cli) {
         String sqlInsert = "INSERT INTO clientes (id, nombre, apellido, direccion, telefono, empresa) VALUES (null, ?, ?, ?, ?, ?)";
-
-        try ( java.sql.PreparedStatement ps = cx.conectar().prepareStatement(sqlInsert)) {
+        
+        try (Connection connection = cx.conectar(); 
+             PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
+            
             ps.setString(1, cli.getNombre());
             ps.setString(2, cli.getApellido());
             ps.setString(3, cli.getDireccion());
@@ -36,25 +34,48 @@ public class daoCliente {
             Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         } finally {
-            cx.desconectar(); // Esto se asegura de cerrar la conexión en cualquier caso
+            cx.desconectar();
         }
     }
 
     public ArrayList<Cliente> read() {
-        ArrayList<Cliente> lista = new ArrayList<Cliente>();
+        ArrayList<Cliente> lista = new ArrayList<>();
+        String sqlSelect = "SELECT * FROM CLIENTES";
+        
+        try (Connection connection = cx.conectar();
+             PreparedStatement ps = connection.prepareStatement(sqlSelect);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Cliente c = new Cliente();
+                c.setId(rs.getInt("id"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellido"));
+                c.setDireccion(rs.getString("direccion"));
+                c.setTelefono(rs.getString("telefono"));
+                c.setEmpresa(rs.getString("empresa"));
+                lista.add(c); // Agregar a la lista
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return lista;
     }
 
     public Cliente read(int idCliente) {
         Cliente u = new Cliente();
+        // Implementación de lectura de un cliente específico si es necesario
         return u;
     }
 
     public boolean update() {
+        // Implementación de actualización si es necesario
         return true;
     }
 
     public boolean delete() {
+        // Implementación de borrado si es necesario
         return true;
     }
 

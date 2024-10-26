@@ -7,19 +7,32 @@ package gestion;
 import dao.daoCliente;
 import java.awt.Dimension;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
+import java.util.ArrayList;
 
 /**
  *
  * @author Leoch
  */
 public class vClientes extends javax.swing.JInternalFrame {
+
     daoCliente daoCli = new daoCliente();
-    
+    DefaultTableModel model = new DefaultTableModel();
+
     public vClientes() {
         initComponents();
         this.setTitle("Gestión de Clientes");
         
+        model.addColumn("ID");
+        model.addColumn("NOMBRE");
+        model.addColumn("APELLIDO");
+        model.addColumn("DIRECCION");
+        model.addColumn("TELEFONO");
+        model.addColumn("EMPRESA");
+        
+        tablaClientes.setModel(model);
+
         this.setResizable(false);
         this.setSize(new Dimension(1000, 800));
         btnNuevo.setEnabled(true);
@@ -27,10 +40,9 @@ public class vClientes extends javax.swing.JInternalFrame {
         btnEditar.setEnabled(false);
         btnEliminar.setEnabled(false);
         btnBorrar.setEnabled(true);
+        refrescartabla();
     }
 
-    
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -52,7 +64,7 @@ public class vClientes extends javax.swing.JInternalFrame {
         btnEliminar = new javax.swing.JButton();
         btnBorrar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaClientes = new javax.swing.JTable();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -102,18 +114,15 @@ public class vClientes extends javax.swing.JInternalFrame {
         btnBorrar.setText("Borrar");
         jPanel1.add(btnBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 210, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaClientes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -143,31 +152,50 @@ public class vClientes extends javax.swing.JInternalFrame {
 
         btnGuardar.setEnabled(true);
         borrar();
-        
+
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-       Cliente cli = new Cliente();
-       cli.setNombre(txtNombre.getText());
-       cli.setApellido(txtApellido.getText());
-       cli.setDireccion(txtDireccion.getText());
-       cli.setTelefono(txtTelefono.getText());
-       cli.setEmpresa(txtEmpresa.getText());
-       
-       if (daoCli.create(cli)){
-           JOptionPane.showMessageDialog(this, "Se creó correctamente");
-       }else{
-           JOptionPane.showMessageDialog(this, "Error al insertar");
-       }
+        Cliente cli = new Cliente();
+        cli.setNombre(txtNombre.getText());
+        cli.setApellido(txtApellido.getText());
+        cli.setDireccion(txtDireccion.getText());
+        cli.setTelefono(txtTelefono.getText());
+        cli.setEmpresa(txtEmpresa.getText());
+
+        if (daoCli.create(cli)) {
+            JOptionPane.showMessageDialog(this, "Se creó correctamente");
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al insertar");
+        }
+        refrescartabla();
     }//GEN-LAST:event_btnGuardarActionPerformed
-    
-    public void borrar(){
+
+    public void refrescartabla() {
+    while (model.getRowCount() > 0) {
+        model.removeRow(0);
+    }
+    for (Cliente cliente : daoCli.read()) {
+        Object fila[] = new Object[6];
+        fila[0] = cliente.getID();
+        fila[1] = cliente.getNombre();
+        fila[2] = cliente.getApellido();
+        fila[3] = cliente.getDireccion();
+        fila[4] = cliente.getTelefono();
+        fila[5] = cliente.getEmpresa();
+        
+        // Agregar cada fila al modelo
+        model.addRow(fila);
+    }
+}
+
+    public void borrar() {
         txtNombre.setText("");
         txtApellido.setText("");
         txtDireccion.setText("");
         txtTelefono.setText("");
         txtEmpresa.setText("");
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -183,7 +211,7 @@ public class vClientes extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tablaClientes;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtDireccion;
     private javax.swing.JTextField txtEmpresa;
