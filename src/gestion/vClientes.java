@@ -19,6 +19,9 @@ public class vClientes extends javax.swing.JInternalFrame {
 
     daoCliente daoCli = new daoCliente();
     DefaultTableModel model = new DefaultTableModel();
+    Cliente cli;
+    int index=-1;
+    ArrayList<Cliente> lista;
 
     public vClientes() {
         initComponents();
@@ -122,6 +125,11 @@ public class vClientes extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6"
             }
         ));
+        tablaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaClientesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaClientes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -171,11 +179,28 @@ public class vClientes extends javax.swing.JInternalFrame {
         refrescartabla();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    private void tablaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaClientesMouseClicked
+        index = tablaClientes.getSelectedRow();
+        cli= daoCli.read(lista.get(index).getID());
+        txtNombre.setText(cli.getNombre());
+        txtApellido.setText(cli.getApellido());
+        txtDireccion.setText(cli.getDireccion());
+        txtTelefono.setText(cli.getTelefono());
+        txtEmpresa.setText(cli.getEmpresa());
+        
+         btnNuevo.setEnabled(false);
+        btnGuardar.setEnabled(false);
+        btnEditar.setEnabled(true);
+        btnEliminar.setEnabled(true);
+        btnBorrar.setEnabled(true);
+    }//GEN-LAST:event_tablaClientesMouseClicked
+
     public void refrescartabla() {
     while (model.getRowCount() > 0) {
         model.removeRow(0);
     }
-    for (Cliente cliente : daoCli.read()) {
+    lista=daoCli.read();
+    for (Cliente cliente : lista) {
         Object fila[] = new Object[6];
         fila[0] = cliente.getID();
         fila[1] = cliente.getNombre();

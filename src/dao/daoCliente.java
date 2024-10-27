@@ -63,10 +63,31 @@ public class daoCliente {
         return lista;
     }
 
-    public Cliente read(int idCliente) {
-        Cliente u = new Cliente();
-        // Implementación de lectura de un cliente específico si es necesario
-        return u;
+    public Cliente read(int id) {
+        Cliente c = new Cliente();
+        try {
+            
+            PreparedStatement ps = cx.conectar().prepareStatement("SELECT * FROM clientes WHERE id=?");
+            ps.setInt(0, id);    
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                c.setId(rs.getInt("id"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellido"));
+                c.setDireccion(rs.getString("direccion"));
+                c.setTelefono(rs.getString("telefono"));
+                c.setEmpresa(rs.getString("empresa"));
+            }
+            ps.close();
+            ps=null;
+            cx.desconectar();
+        } catch (SQLException ex) {
+            Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
+  
+       
+    }
+        return c;
     }
 
     public boolean update() {
