@@ -20,20 +20,20 @@ public class vClientes extends javax.swing.JInternalFrame {
     daoCliente daoCli = new daoCliente();
     DefaultTableModel model = new DefaultTableModel();
     Cliente cli;
-    int index=-1;
+    int index = -1;
     ArrayList<Cliente> lista;
 
     public vClientes() {
         initComponents();
         this.setTitle("Gestión de Clientes");
-        
+
         model.addColumn("ID");
         model.addColumn("NOMBRE");
         model.addColumn("APELLIDO");
         model.addColumn("DIRECCION");
         model.addColumn("TELEFONO");
         model.addColumn("EMPRESA");
-        
+
         tablaClientes.setModel(model);
 
         this.setResizable(false);
@@ -109,12 +109,27 @@ public class vClientes extends javax.swing.JInternalFrame {
         jPanel1.add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 210, -1, -1));
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 210, -1, -1));
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 210, -1, -1));
 
         btnBorrar.setText("Borrar");
+        btnBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBorrarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 210, -1, -1));
 
         tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
@@ -180,39 +195,119 @@ public class vClientes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void tablaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaClientesMouseClicked
-        index = tablaClientes.getSelectedRow();
-        cli= daoCli.read(lista.get(index).getID());
+        /*index = tablaClientes.getSelectedRow();
+        cli = daoCli.read(lista.get(index).getID());
         txtNombre.setText(cli.getNombre());
         txtApellido.setText(cli.getApellido());
         txtDireccion.setText(cli.getDireccion());
         txtTelefono.setText(cli.getTelefono());
         txtEmpresa.setText(cli.getEmpresa());
-        
-         btnNuevo.setEnabled(false);
+
+        btnNuevo.setEnabled(false);
         btnGuardar.setEnabled(false);
         btnEditar.setEnabled(true);
         btnEliminar.setEnabled(true);
-        btnBorrar.setEnabled(true);
+        btnBorrar.setEnabled(true);*/
+        // Obtener el índice de la fila seleccionada
+        index = tablaClientes.getSelectedRow();
+
+        // Verificar que se haya seleccionado una fila válida
+        if (index != -1) {
+            // Obtener los datos del cliente seleccionado
+            cli = daoCli.read(lista.get(index).getID());
+
+            if (cli != null) {
+                // Asignar los datos del cliente a los JTextFields
+                txtNombre.setText(cli.getNombre());
+                txtApellido.setText(cli.getApellido());
+                txtDireccion.setText(cli.getDireccion());
+                txtTelefono.setText(cli.getTelefono());
+                txtEmpresa.setText(cli.getEmpresa());
+
+                // Habilitar o deshabilitar los botones correspondientes
+                btnNuevo.setEnabled(false);
+                btnGuardar.setEnabled(false);
+                btnEditar.setEnabled(true);
+                btnEliminar.setEnabled(true);
+                btnBorrar.setEnabled(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Cliente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente de la lista.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_tablaClientesMouseClicked
 
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        cli.setNombre(txtNombre.getText());
+        cli.setApellido(txtApellido.getText());
+        cli.setDireccion(txtDireccion.getText());
+        cli.setTelefono(txtTelefono.getText());
+        cli.setEmpresa(txtEmpresa.getText());
+
+        if (daoCli.update(cli)) {
+            JOptionPane.showMessageDialog(this, "Se Editó correctamente");
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al Editar");
+        }
+        refrescartabla();
+        btnNuevo.setEnabled(true);
+        btnGuardar.setEnabled(false);
+        btnEditar.setEnabled(false);
+        btnEliminar.setEnabled(false);
+        btnBorrar.setEnabled(true);
+
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+
+        if (index > -1) {
+            int res = JOptionPane.showConfirmDialog(this, "Estas seguro de eliminar este registro?", "ELIMINAR", JOptionPane.YES_NO_OPTION);
+
+            if (res == 0) {
+                if (daoCli.delete(lista.get(index).getID())) {
+                    JOptionPane.showMessageDialog(this, "Se Eliminó correctamente");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al Eliminar");
+                }
+                refrescartabla();
+                btnNuevo.setEnabled(true);
+                btnGuardar.setEnabled(false);
+                btnEditar.setEnabled(false);
+                btnEliminar.setEnabled(false);
+                btnBorrar.setEnabled(true);
+            }
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
+                refrescartabla();
+                borrar();
+                btnNuevo.setEnabled(true);
+                btnGuardar.setEnabled(false);
+                btnEditar.setEnabled(false);
+                btnEliminar.setEnabled(false);
+                btnBorrar.setEnabled(true);
+    }//GEN-LAST:event_btnBorrarActionPerformed
+
     public void refrescartabla() {
-    while (model.getRowCount() > 0) {
-        model.removeRow(0);
+        while (model.getRowCount() > 0) {
+            model.removeRow(0);
+        }
+        lista = daoCli.read();
+        for (Cliente cliente : lista) {
+            Object fila[] = new Object[6];
+            fila[0] = cliente.getID();
+            fila[1] = cliente.getNombre();
+            fila[2] = cliente.getApellido();
+            fila[3] = cliente.getDireccion();
+            fila[4] = cliente.getTelefono();
+            fila[5] = cliente.getEmpresa();
+
+            // Agregar cada fila al modelo
+            model.addRow(fila);
+        }
     }
-    lista=daoCli.read();
-    for (Cliente cliente : lista) {
-        Object fila[] = new Object[6];
-        fila[0] = cliente.getID();
-        fila[1] = cliente.getNombre();
-        fila[2] = cliente.getApellido();
-        fila[3] = cliente.getDireccion();
-        fila[4] = cliente.getTelefono();
-        fila[5] = cliente.getEmpresa();
-        
-        // Agregar cada fila al modelo
-        model.addRow(fila);
-    }
-}
 
     public void borrar() {
         txtNombre.setText("");

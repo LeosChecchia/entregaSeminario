@@ -83,6 +83,7 @@ public class login extends javax.swing.JFrame {
         try {
             String user=txtUsuario.getText();
             String password= String.valueOf(txtPassword.getPassword());
+            
             String query= "SELECT * FROM usuario WHERE user='"+user+"' and password='"+password+"'";
             java.sql.Statement st= cx.conectar().createStatement();
             ResultSet rs= st.executeQuery(query);

@@ -19,10 +19,9 @@ public class daoCliente {
 
     public boolean create(Cliente cli) {
         String sqlInsert = "INSERT INTO clientes (id, nombre, apellido, direccion, telefono, empresa) VALUES (null, ?, ?, ?, ?, ?)";
-        
-        try (Connection connection = cx.conectar(); 
-             PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
-            
+
+        try ( Connection connection = cx.conectar();  PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
+
             ps.setString(1, cli.getNombre());
             ps.setString(2, cli.getApellido());
             ps.setString(3, cli.getDireccion());
@@ -41,10 +40,8 @@ public class daoCliente {
     public ArrayList<Cliente> read() {
         ArrayList<Cliente> lista = new ArrayList<>();
         String sqlSelect = "SELECT * FROM CLIENTES";
-        
-        try (Connection connection = cx.conectar();
-             PreparedStatement ps = connection.prepareStatement(sqlSelect);
-             ResultSet rs = ps.executeQuery()) {
+
+        try ( Connection connection = cx.conectar();  PreparedStatement ps = connection.prepareStatement(sqlSelect);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Cliente c = new Cliente();
@@ -63,12 +60,13 @@ public class daoCliente {
         return lista;
     }
 
+    /*
     public Cliente read(int id) {
         Cliente c = new Cliente();
         try {
-            
+
             PreparedStatement ps = cx.conectar().prepareStatement("SELECT * FROM clientes WHERE id=?");
-            ps.setInt(0, id);    
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -80,24 +78,93 @@ public class daoCliente {
                 c.setEmpresa(rs.getString("empresa"));
             }
             ps.close();
-            ps=null;
+            ps = null;
             cx.desconectar();
         } catch (SQLException ex) {
             Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
-  
-       
-    }
+
+        }
         return c;
+    }*/
+    public Cliente read(int id) {
+        Cliente c = null;  // Inicializa c como null para indicar que no se encontró un cliente
+        try {
+            // Preparar la consulta SQL
+            PreparedStatement ps = cx.conectar().prepareStatement("SELECT * FROM clientes WHERE id=?");
+            ps.setInt(1, id);  // Ajustar el índice a 1
+
+            // Ejecutar la consulta
+            ResultSet rs = ps.executeQuery();
+
+            // Si se encuentra un resultado, crear y llenar el objeto Cliente
+            if (rs.next()) {
+                c = new Cliente();  // Crear una instancia solo si hay datos
+                c.setId(rs.getInt("id"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellido"));
+                c.setDireccion(rs.getString("direccion"));
+                c.setTelefono(rs.getString("telefono"));
+                c.setEmpresa(rs.getString("empresa"));
+            }
+
+            // Cerrar recursos
+            rs.close();
+            ps.close();
+            cx.desconectar();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return c;  // Devolver el cliente encontrado o null si no se encontró
     }
 
-    public boolean update() {
-        // Implementación de actualización si es necesario
-        return true;
+    public boolean update(Cliente cli) {
+        try {
+            String sqlUpdate = "UPDATE clientes set nombre=?, apellido=?, direccion=?, telefono=?, empresa=? WHERE id=?";
+            PreparedStatement ps = cx.conectar().prepareStatement(sqlUpdate);
+
+            ps.setString(1, cli.getNombre());
+            ps.setString(2, cli.getApellido());
+            ps.setString(3, cli.getDireccion());
+            ps.setString(4, cli.getTelefono());
+            ps.setString(5, cli.getEmpresa());
+            ps.setInt(6, cli.getID());
+
+            ps.execute();
+            // Cerrar recursos
+            ps.close();
+            ps = null;
+            cx.desconectar();
+
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
     }
 
-    public boolean delete() {
-        // Implementación de borrado si es necesario
-        return true;
+    public boolean delete(int id) {
+
+        try {
+            String sqlDelete = "DELETE FROM clientes WHERE id=?";
+            PreparedStatement ps = cx.conectar().prepareStatement(sqlDelete);
+
+            ps.setInt(1, id);
+
+            ps.execute();
+            // Cerrar recursos
+            ps.close();
+            ps = null;
+            cx.desconectar();
+
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(daoCliente.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
     }
 
 }
